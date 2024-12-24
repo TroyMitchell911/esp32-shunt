@@ -1,0 +1,8 @@
+/build
+/cmake-build-debug-esp32c3
+/sdkconfig.old
+/main/ca_emqx_troy_home.crt
+/.idea
+/emqxsl-ca.crt
+/sdkconfig*
+/pytest_hello_world.py
