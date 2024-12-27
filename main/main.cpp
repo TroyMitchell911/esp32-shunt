@@ -29,6 +29,9 @@ static App::Switch *sw_12v_1;
 static App::Switch *sw_12v_2;
 static App::Switch *sw_12v_3;
 static App::Switch *sw_5v_1;
+static App::Switch *io4;
+static App::Switch *io5;
+static App::Switch *io1;
 
 static void mqtt_event(HAL::MQTT::event_t event, void *data, void *arg) {
     if(event == HAL::MQTT::EVENT_CONNECTED) {
@@ -36,6 +39,9 @@ static void mqtt_event(HAL::MQTT::event_t event, void *data, void *arg) {
         sw_12v_2->Init();
         sw_12v_3->Init();
         sw_5v_1->Init();
+        io4->Init();
+        io5->Init();
+        io1->Init();
     }
 }
 #include "ca_emqx_troy_home.crt"
@@ -49,6 +55,9 @@ static void wifi_event(HAL::WiFiMesh::event_t event_id, void *event_data, void *
         sw_12v_2->Init();
         sw_12v_3->Init();
         sw_5v_1->Init();
+        io4->Init();
+        io5->Init();
+        io1->Init();
     }
 }
 
@@ -58,7 +67,7 @@ __attribute__((noreturn)) void app_main(void) {
     ESP_LOGI(TAG, "This a iot relay device");
 
     HAL::Init();
-
+    printf("Minimum free heap size: %" PRIu32 " bytes\n", esp_get_minimum_free_heap_size());
     HAL::WiFiMesh &mesh = HAL::WiFiMesh::GetInstance();
     sw_12v_1 = new App::Switch(&mesh, CONFIG_ESP32_SHUNT_WHERE,
                          CONFIG_12V_1_DEVICE_NAME,
@@ -76,6 +85,22 @@ __attribute__((noreturn)) void app_main(void) {
                                CONFIG_5V_1_DEVICE_NAME,
                                3,
                                1);
+
+    io4 = new App::Switch(&mesh, CONFIG_ESP32_SHUNT_WHERE,
+                              CONFIG_IO4_DEVICE_NAME,
+                              4,
+                              1);
+
+    io5 = new App::Switch(&mesh, CONFIG_ESP32_SHUNT_WHERE,
+                          CONFIG_IO5_DEVICE_NAME,
+                          5,
+                          1);
+
+    io1 = new App::Switch(&mesh, CONFIG_ESP32_SHUNT_WHERE,
+                          CONFIG_IO1_DEVICE_NAME,
+                          1,
+                          1);
+    printf("Minimum free heap size: %" PRIu32 " bytes\n", esp_get_minimum_free_heap_size());
 
     mesh.BindingCallback(wifi_event, nullptr);
     HAL::WiFiMesh::cfg_t mesh_cfg{};

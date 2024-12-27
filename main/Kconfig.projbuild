@@ -222,5 +222,23 @@ menu "IOT Relay Config"
             default "5V_1"
             help
                 The name of the device to which the first controllable 5V is connected
+
+        config IO4_DEVICE_NAME
+            string "IO4 connected device name"
+            default "IO4"
+            help
+                IO4 connected device name
+
+        config IO5_DEVICE_NAME
+            string "IO5 connected device name"
+            default "IO5"
+            help
+                IO5 connected device name
+
+        config IO1_DEVICE_NAME
+            string "IO1 connected device name"
+            default "IO1"
+            help
+                IO51 connected device name
     endmenu
 endmenu
