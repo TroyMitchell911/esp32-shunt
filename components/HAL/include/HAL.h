@@ -10,6 +10,7 @@
 #include "HAL_WiFi.h"
 #include "HAL_WiFiMesh.h"
 #include "HAL_Time.h"
+#include "HAL_I2C.h"
 
 namespace HAL {
     void Init();
