@@ -27,7 +27,7 @@ namespace Driver {
         HAL::I2C *i2c;
         uint8_t current_value;
     public:
-        PCF8574(uint32_t scl, uint32_t sda);
+        PCF8574(uint32_t addr, uint32_t scl, uint32_t sda);
         void Set(uint32_t num, uint8_t value);
         static int SG(uint32_t num, uint8_t value, bool read, void *arg);
     };
