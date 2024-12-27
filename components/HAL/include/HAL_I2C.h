@@ -21,7 +21,7 @@ namespace HAL {
 
         void Write(uint8_t byte);
 
-        void Write(uint16_t half_byte);
+        void Write(uint16_t half_word);
 
         void Write(uint32_t word);
 

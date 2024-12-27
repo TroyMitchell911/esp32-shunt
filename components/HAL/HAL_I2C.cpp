@@ -40,27 +40,47 @@ HAL::I2C::I2C(const char *bus_name, uint32_t scl_freq, uint16_t device_addr) {
 }
 
 void HAL::I2C::Write(uint8_t byte) {
+    if (!this->dev) {
+        ESP_LOGE(TAG, "This i2c dev doesn't exist");
+        return;
+    }
     std::vector<uint8_t> buffer = {byte};
     i2c_master_transmit(this->dev, buffer.data(), buffer.size(), -1);
 }
 
-void HAL::I2C::Write(uint16_t half_byte) {
-    std::vector<uint8_t> buffer(sizeof(half_byte));
-    std::memcpy(buffer.data(), &half_byte, sizeof(half_byte));  // 按字节复制
+void HAL::I2C::Write(uint16_t half_word) {
+    if (!this->dev) {
+        ESP_LOGE(TAG, "This i2c dev doesn't exist");
+        return;
+    }
+    std::vector<uint8_t> buffer(sizeof(half_word));
+    std::memcpy(buffer.data(), &half_word, sizeof(half_word));  // 按字节复制
     i2c_master_transmit(this->dev, buffer.data(), buffer.size(), -1);
 }
 
 void HAL::I2C::Write(uint32_t word) {
+    if (!this->dev) {
+        ESP_LOGE(TAG, "This i2c dev doesn't exist");
+        return;
+    }
     std::vector<uint8_t> buffer(sizeof(word));
     std::memcpy(buffer.data(), &word, sizeof(word));  // 按字节复制
     i2c_master_transmit(this->dev, buffer.data(), buffer.size(), -1);
 }
 
 void HAL::I2C::Write(uint8_t *buffer, uint32_t size) {
+    if (!this->dev) {
+        ESP_LOGE(TAG, "This i2c dev doesn't exist");
+        return;
+    }
     i2c_master_transmit(this->dev, buffer, size, -1);
 };
 
 void HAL::I2C::Read(uint8_t *buffer, uint32_t size) {
+    if (!this->dev) {
+        ESP_LOGE(TAG, "This i2c dev doesn't exist");
+        return;
+    }
     i2c_master_receive(this->dev, buffer, size, -1);
 }
 
