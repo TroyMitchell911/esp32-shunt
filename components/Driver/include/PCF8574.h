@@ -8,11 +8,13 @@
 #include <soc/gpio_num.h>
 #include "HAL_I2C.h"
 
+#define GPIO_BASE_NUMBER    50
+
 namespace Driver {
     class PCF8574 {
     public:
         typedef enum {
-            GPIO_P0,
+            GPIO_P0 = GPIO_BASE_NUMBER,
             GPIO_P1,
             GPIO_P2,
             GPIO_P3,
@@ -25,8 +27,9 @@ namespace Driver {
         HAL::I2C *i2c;
         uint8_t current_value;
     public:
-        PCF8574(gpio_num_t scl, gpio_num_t sda);
-        void Set(pcf8574_gpio_t num, uint8_t value);
+        PCF8574(uint32_t scl, uint32_t sda);
+        void Set(uint32_t num, uint8_t value);
+        static int SG(uint32_t num, uint8_t value, bool read, void *arg);
     };
 }
 
