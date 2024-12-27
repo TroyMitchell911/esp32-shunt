@@ -14,6 +14,11 @@ namespace HAL{
 
     class GPIO {
     public:
+        struct gpio_cfg;
+
+        typedef int (*gpio_opf)(uint32_t num, uint8_t value, bool read, void *arg);
+        typedef int (*gpio_init_opf)(struct gpio_cfg *cfg);
+
         typedef enum {
             GPIO_DISABLE,
             GPIO_INPUT,
@@ -32,7 +37,7 @@ namespace HAL{
             GPIO_STATE_NONE,
         }gpio_state_t;
 
-        typedef struct {
+        typedef struct gpio_cfg{
 #if GPIO_USE_GROUP
             uint32_t group;
 #endif
@@ -44,6 +49,8 @@ namespace HAL{
 #if GPIO_USE_SPEED
             uint32_t speed;
 #endif
+            gpio_opf op;
+            void *op_arg;
         }gpio_cfg_t;
 
     private:
@@ -58,8 +65,8 @@ namespace HAL{
         GPIO(uint32_t pin);
 #endif
         explicit GPIO(HAL::GPIO::gpio_cfg_t gpiocfg);
-
-        GPIO();
+        /* For ext GPIO */
+        GPIO(uint32_t pin, gpio_init_opf init, gpio_opf op, void *op_arg);
 
         ~GPIO();
 

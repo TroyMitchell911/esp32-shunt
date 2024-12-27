@@ -9,7 +9,7 @@
 #include <driver/gpio.h>
 #include <esp_log.h>
 
-#define GPIO_LOG(format, ... ) ESP_LOGI("GPIO", format, ##__VA_ARGS__)
+#define TAG "[HAL::GPIO]"
 
 static void GPIO_InitDirection(const HAL::GPIO::gpio_cfg_t *cfg, void* port_cfg) {
     auto *config = (gpio_config_t*)port_cfg;
@@ -55,11 +55,20 @@ static void GPIO_Init(const HAL::GPIO::gpio_cfg_t *cfg) {
 }
 
 static void GPIO_Set(const HAL::GPIO::gpio_cfg_t  *cfg, HAL::GPIO::gpio_state_t state) {
+    if (cfg->op) {
+        ESP_LOGE(TAG, "cfg->op ok");
+        cfg->op(cfg->pin, state == HAL::GPIO::GPIO_STATE_HIGH ? 1 : 0, false, cfg->op_arg);
+        return;
+    }
+    ESP_LOGE(TAG, "cfg->op nook");
     gpio_set_level(gpio_num_t(cfg->pin), state == HAL::GPIO::GPIO_STATE_HIGH ? 1 : 0);
 
 }
 
 static HAL::GPIO::gpio_state_t GPIO_Get(const HAL::GPIO::gpio_cfg_t  *cfg) {
+    if (cfg->op)
+        return (HAL::GPIO::gpio_state_t )cfg->op(cfg->pin, 0, true, cfg->op_arg);
+
     int state = gpio_get_level(gpio_num_t(cfg->pin));
     return state == 1 ? HAL::GPIO::GPIO_STATE_HIGH : HAL::GPIO::GPIO_STATE_LOW;
 }
@@ -113,19 +122,27 @@ void HAL::GPIO::Reconfigure(HAL::GPIO::gpio_cfg_t gpiocfg) {
 }
 
 void HAL::GPIO::Set(HAL::GPIO::gpio_state_t gpio_state) {
-    if(this->cfg.direction == HAL::GPIO::GPIO_INPUT || this->cfg.direction == HAL::GPIO::GPIO_DISABLE)
+    if(this->cfg.op == nullptr && (this->cfg.direction == HAL::GPIO::GPIO_INPUT || this->cfg.direction == HAL::GPIO::GPIO_DISABLE))
         return;
     GPIO_Set(&this->cfg, gpio_state);
     this->state = gpio_state;
 }
 
 HAL::GPIO::gpio_state_t HAL::GPIO::Get() {
-    if(!inited || this->cfg.direction == GPIO_DISABLE)
+    if(this->cfg.op == nullptr &&  (!inited || this->cfg.direction == GPIO_DISABLE))
         return HAL::GPIO::GPIO_STATE_NONE;
     if(this->cfg.direction == HAL::GPIO::GPIO_OUTPUT)
         return this->state;
     else
         return GPIO_Get(&this->cfg);
+}
+
+HAL::GPIO::GPIO(uint32_t pin, HAL::GPIO::gpio_init_opf init, HAL::GPIO::gpio_opf op, void *op_arg) {
+    this->cfg.pin = pin;
+    this->cfg.op = op;
+    this->cfg.op_arg = op_arg;
+    if (init)
+        init(&cfg);
 }
 
 
