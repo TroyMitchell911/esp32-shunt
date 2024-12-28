@@ -24,10 +24,10 @@ void Driver::PCF8574::Set(uint32_t num, uint8_t value) {
 
 Driver::PCF8574::PCF8574(uint32_t addr, uint32_t scl, uint32_t sda) {
     HAL::I2C::InitBus("I2C0", (gpio_num_t)scl, (gpio_num_t)sda);
-
+    vTaskDelay(500 / portTICK_PERIOD_MS);
     i2c = new HAL::I2C("I2C0", 400000, addr);
     this->current_value = 0x00;
-    vTaskDelay(100 / portTICK_PERIOD_MS);
+    vTaskDelay(500 / portTICK_PERIOD_MS);
     i2c->Write(this->current_value);
 }
 
@@ -39,6 +39,12 @@ int Driver::PCF8574::SG(uint32_t num, uint8_t value, bool read, void *arg) {
         return 0;
     }
     return 0;
+}
+
+Driver::PCF8574 &Driver::PCF8574::GetInstance() {
+    static Driver::PCF8574 pcf8574{0x20, GPIO_NUM_20, GPIO_NUM_21};
+
+    return pcf8574;
 }
 
 
