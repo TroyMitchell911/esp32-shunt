@@ -21,6 +21,7 @@
 #include "HAL.h"
 #include "BinarySensor.h"
 #include "Sensor.h"
+#include "Driver.h"
 
 #define TAG "[main]"
 
@@ -67,6 +68,8 @@ __attribute__((noreturn)) void app_main(void) {
     ESP_LOGI(TAG, "This a iot relay device");
 
     HAL::Init();
+    Driver::Init();
+
     printf("Minimum free heap size: %" PRIu32 " bytes\n", esp_get_minimum_free_heap_size());
     HAL::WiFiMesh &mesh = HAL::WiFiMesh::GetInstance();
     sw_12v_1 = new App::Switch(&mesh, CONFIG_ESP32_SHUNT_WHERE,
