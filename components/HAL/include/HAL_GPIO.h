@@ -9,6 +9,8 @@
 #include <soc/gpio_num.h>
 
 namespace HAL{
+#define GPIO_MIN_NUMBER         GPIO_NUM_0
+#define GPIO_MAX_NUMBER         GPIO_NUM_21
 #define GPIO_USE_GROUP          0
 #define GPIO_USE_SPEED          0
 
@@ -49,8 +51,6 @@ namespace HAL{
 #if GPIO_USE_SPEED
             uint32_t speed;
 #endif
-            gpio_opf op;
-            void *op_arg;
         }gpio_cfg_t;
 
     private:
@@ -65,12 +65,11 @@ namespace HAL{
         GPIO(uint32_t pin);
 #endif
         explicit GPIO(HAL::GPIO::gpio_cfg_t gpiocfg);
-        /* For ext GPIO */
-        GPIO(uint32_t pin, gpio_init_opf init, gpio_opf op, void *op_arg);
 
         ~GPIO();
 
     public:
+        static void ExtConfig(gpio_init_opf init, gpio_opf op, void *op_arg);
         HAL::GPIO::gpio_cfg_t GetConfig();
         void Reconfigure(HAL::GPIO::gpio_cfg_t gpiocfg);
         void Set(HAL::GPIO::gpio_state_t gpio_state);
