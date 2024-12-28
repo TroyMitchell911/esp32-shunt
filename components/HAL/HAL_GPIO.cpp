@@ -62,20 +62,33 @@ static void GPIO_Set(const HAL::GPIO::gpio_cfg_t  *cfg,
                      HAL::GPIO::gpio_state_t state,
                      HAL::GPIO::gpio_opf op,
                      void *op_arg) {
-    if(cfg->pin >= GPIO_MIN_NUMBER && cfg->pin <= GPIO_MAX_NUMBER)
+    if(cfg->pin >= GPIO_MIN_NUMBER && cfg->pin <= GPIO_MAX_NUMBER) {
         gpio_set_level(gpio_num_t(cfg->pin), state == HAL::GPIO::GPIO_STATE_HIGH ? 1 : 0);
-    else
-        op(cfg->pin, state == HAL::GPIO::GPIO_STATE_HIGH ? 1 : 0, false, op_arg);
+    }
+    else {
+        if (op)
+            op(cfg->pin, state == HAL::GPIO::GPIO_STATE_HIGH ? 1 : 0, false, op_arg);
+        else
+            ESP_LOGE(TAG, "Please run [ExtConfig] before set ext io");
+    }
+
 }
 
 static HAL::GPIO::gpio_state_t GPIO_Get(const HAL::GPIO::gpio_cfg_t  *cfg,
                                         HAL::GPIO::gpio_opf op,
                                         void *op_arg) {
     int state;
-    if(cfg->pin >= GPIO_MIN_NUMBER && cfg->pin <= GPIO_MAX_NUMBER)
+    if(cfg->pin >= GPIO_MIN_NUMBER && cfg->pin <= GPIO_MAX_NUMBER) {
         state = gpio_get_level(gpio_num_t(cfg->pin));
-    else
-        state = op(cfg->pin, 0, true, op_arg);
+    }
+    else {
+        if (op) {
+            state = op(cfg->pin, 0, true, op_arg);
+        } else {
+            ESP_LOGE(TAG, "Please run [ExtConfig] before set ext io");
+            return HAL::GPIO::GPIO_STATE_LOW;
+        }
+    }
     return state == 1 ? HAL::GPIO::GPIO_STATE_HIGH : HAL::GPIO::GPIO_STATE_LOW;
 }
 /* -----------------------For porting end------------------------- */
